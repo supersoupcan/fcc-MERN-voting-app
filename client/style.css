@@ -1,0 +1,59 @@
+body {
+  font-family: "Roboto";
+}
+
+h2{
+  margin : 0px;
+}
+
+@media screen and (min-width: 500px) {
+  .container{
+    width: 80%;
+  }
+}
+
+.container {
+  margin : auto;
+}
+
+.flexHome {
+  display : flex;
+  flex-wrap : wrap-reverse;
+}
+
+.appList {
+  flex : 1;
+  min-width: 350px;
+}
+
+.appDisplay {
+  flex : 3;
+}
+
+.pollFlex {
+  display: flex;
+  flex-wrap : wrap;
+  align-items : flex-start;
+}
+
+.pollList {
+  flex : 2;
+  min-width: 350px;
+  margin: 0px 50px;
+}
+
+.pollGraph {
+  flex : 1;
+  min-width: 300px;
+  min-height: 300px;
+  margin: 0px 50px;
+}
+
+.create {
+  text-align : center;
+  min-width: 400px;
+}
+
+.statistics{
+  text-align : center;
+}
