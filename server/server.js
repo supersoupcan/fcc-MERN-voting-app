@@ -33,7 +33,11 @@ app.use(bodyParser.json());
 
 app.use(session({
   secret: 'what a heck of a life',
-  store : new MongoStore({ mongooseConnection: mongoose.connection })
+  store : new MongoStore({ 
+    mongooseConnection: mongoose.connection,
+  }),
+  resave: true,
+  saveUninitialized: true,
 }));
 
 //  PASSPORT CONFIG  //
@@ -56,7 +60,6 @@ passport.deserializeUser(function(id, done) {
 passport.use(new FacebookStrategy(authConfig.facebook,
   function(token, tokenSecret, profile, cb){
     User.findOne({facebookID : profile.id}, function(err, user){
-      console.log(authConfig.facebook.clientID);
       if (err){
         return cb(err);
       } else if (user){

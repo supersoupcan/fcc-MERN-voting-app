@@ -4,6 +4,7 @@ import Stats from './Stats';
 import Poll from './Poll';
 import Bar from './Bar';
 import Create from './Create';
+import Profile from './Profile';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { List, ListItem } from 'material-ui/List';
@@ -28,17 +29,19 @@ export default class Home extends Component {
   }
   
   updateData(){
+    console.log('called');
     axios.get('/polls/list').then(res => {
       this.setState({
         polls : res.data,
         selected : -2
       });
+      console.log('component switched!');
     }).catch(err => {
       console.log(err);
     });
   }
   
-  hasVoted(pollIndex){
+  hasVoted(){
     var votedIndex = null;
     if (this.props.match.params.id){
       this.state.polls[this.state.selected].options.map((option, index) => {
@@ -53,6 +56,12 @@ export default class Home extends Component {
   }
   
   render(){
+    
+    const yourPolls = this.state.polls.filter((poll) => {
+       return (poll.author.facebookID === this.props.match.params.id)
+    })
+    
+    
     return(
       <MuiThemeProvider>
         <div>
@@ -71,15 +80,28 @@ export default class Home extends Component {
                       <FontIcon />
                     }
                   />
-                  {this.props.match.params.id && <ListItem 
+                  {this.props.match.params.id && 
+                    <ListItem 
+                      onClick={() => this.setState({selected : -3})}
+                      primaryText="Profile"
+                      rightIcon={
+                        this.state.selected === -3 ?
+                        <FontIcon className="fa fa-user"/> :
+                        <FontIcon />
+                      }
+                    />
+                  }
+                  {this.props.match.params.id && 
+                    <ListItem 
                       onClick={() => this.setState({selected : -1})}
                       primaryText="Create A Poll"
                       rightIcon={
                         this.state.selected === -1 ?
                         <FontIcon className="fa fa-plus-circle"/> :
                         <FontIcon />
-                    }
-                  />}
+                      }
+                    />
+                  }
                   <Divider />
                   <Subheader>
                     Polls
@@ -102,6 +124,13 @@ export default class Home extends Component {
                 </List>
               </div>
               <div className="appDisplay">
+                {this.state.selected === -3 && 
+                  <Profile
+                    data={yourPolls}
+                    user={this.props.match.params.id}
+                    dataCb={this.updateData}
+                  />
+                }
                 {this.state.selected === -2 &&  
                   <Stats 
                     data={this.state.polls} 

@@ -6,6 +6,7 @@ var Poll = require('../../models/poll');
 
 router.post('/vote', function(req, res){
   Poll.findOne({_id : req.body.id}, function(err, doc){
+    console.log(doc);
     if (err) throw err;
     doc.options[req.body.index].votes.push({ 
       facebookID : req.user.facebookID
@@ -17,9 +18,24 @@ router.post('/vote', function(req, res){
   })
 })
 
+router.post('/customVote', function(req, res){
+  Poll.findOne({_id : req.body.id}, function(err, doc){
+    if (err) throw err;
+    doc.options.push({
+      label : req.body.newOption,
+      votes : [{facebookID : req.user.facebookID}]
+    })
+    doc.save(function(err, done){
+      if (err) throw err;
+      res.redirect('/user/' + req.user.facebookID)
+    });
+  })
+})
+
 router.post('/create', function(req, res){
   var newPoll = new Poll();
   newPoll.title = req.body.title;
+  newPoll.allowCustom = req.body.allowCustom;
   newPoll.author = {
     displayName : req.user.displayName,
     facebookID : req.user.facebookID,
@@ -35,6 +51,15 @@ router.post('/create', function(req, res){
     newPoll.save(function(err){
       if (err) throw err;
     })
+  })
+  res.redirect('/user/' + req.user.facebookID);
+})
+
+router.post('/delete', function(req, res){
+  console.log(req.body.id);
+  Poll.findByIdAndRemove(req.body.id, function(err){
+    if (err) throw err;
+    console.log('poll deleted!');
   })
   res.redirect('/user/' + req.user.facebookID);
 })

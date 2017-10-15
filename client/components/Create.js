@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+
+
 import AppBar from 'material-ui/AppBar';
 import TextField from 'material-ui/TextField';
 import FontIcon from 'material-ui/FontIcon'
 import RaisedButton from 'material-ui/RaisedButton';
+import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
 import { pinkA200, red500 } from 'material-ui/styles/colors';
 
@@ -15,6 +18,7 @@ export default class Create extends Component {
       options : ["", ""],
       title : "",
       firstVote : null,
+      allowCustom : false,
       error : [],
     },
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -34,8 +38,8 @@ export default class Create extends Component {
       error.push("error - Title is " + 
       (this.state.title.length - 100) + " characters too long");
     }
-    if(this.state.options <= 2){
-      error.push("error - Polls must have at least 2 Options");
+    if(this.state.options <= 2 && this.state.allowCustom === false){
+      error.push("error - Polls without customized voting must have 2 Options");
     }
     
     this.state.options.map(function(item, index){
@@ -54,6 +58,7 @@ export default class Create extends Component {
         url: '/polls/create',
         data: {
           title : this.state.title,
+          allowCustom : this.state.allowCustom,
           options : this.state.options,
           firstVote : this.state.firstVote
         }
@@ -131,12 +136,12 @@ export default class Create extends Component {
   render(){
     return(
         <div className="create">
-          <div>
+          <div style={{marginBottom : '10px'}}>
             <h2>Create A Poll</h2>
           </div>
           <div>
             <TextField
-              style={{width : "70%", marginTop : "5px", marginBottom : "10px"}}
+              style={{width : "70%", marginBottom : "10px"}}
               floatingLabelText="Title"
               name='title'
               value={this.state.title}
@@ -161,7 +166,8 @@ export default class Create extends Component {
                     style={{width : "70%"}}
                   />
                   <span onClick={(event) => this.setFirstVote(index, event)}>
-                    <FontIcon 
+                    <FontIcon
+                      color='black'
                       style={{marginLeft : "10px"}}
                       className={
                         this.state.firstVote === index ?
@@ -173,11 +179,23 @@ export default class Create extends Component {
                 </div>
             )}, this)}
             <RaisedButton
-              style={{width : "35%", marginTop : '10px'}}
+              style={{width : "35%", marginTop : '10px', marginBottom : '20px'}}
               label="Add Option"
               secondary={true}
               onClick={(event) => this.addOption(event)}
             />
+            <br />
+            <div style={{width : "35%", margin : 'auto'}}>
+              <Checkbox 
+                label="Allow Custom User Options"
+                checked={this.state.allowCustom}
+                onCheck={() => {
+                  this.setState({
+                    allowCustom : !this.state.allowCustom
+                  })}
+                }
+              />
+            </div>
             <br />
             <RaisedButton
               style={{width : "35%", marginTop : '10px'}}

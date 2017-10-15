@@ -4,7 +4,10 @@ import { List, ListItem } from 'material-ui/List';
 import FontIcon from 'material-ui/FontIcon';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 import axios from 'axios';
+
+//grey100, grey300, grey400, grey500
 
 export default class Poll extends Component{
   constructor(props){
@@ -12,8 +15,16 @@ export default class Poll extends Component{
     this.state = {
       selected : null,
       active : true,
+      customOption: '',
     },
-    this.processVote = this.processVote.bind(this);
+    this.processVote = this.processVote.bind(this)
+  }
+  
+  
+  updateCustom(event){
+    this.setState({
+      customOption : event.target.value
+    })
   }
   
   selectOption(index, event){
@@ -21,7 +32,8 @@ export default class Poll extends Component{
       this.setState({
         selected : null
       })
-    }else{
+    }
+    else{
       this.setState({
         selected : index
       })
@@ -30,19 +42,33 @@ export default class Poll extends Component{
   
   processVote(){
     this.setState({active : false});
-    axios({
-        method: 'post',
-        url: '/polls/vote',
+    if(this.state.selected === -1){
+      axios({
+        method : 'post',
+        url: '/polls/customVote',
         data: {
-          index : this.state.selected,
+          newOption : this.state.customOption,
           id : this.props.data._id,
         }
-    }).then(res => {
-      console.log('calling dataCB');
-      this.props.dataCb();
-    }).catch(err => {
-      if (err) throw err;
-    })
+      }).then(res => {
+        this.props.dataCb()
+      }).catch(err => {
+        if (err) throw err;
+      })
+    }else{
+      axios({
+          method: 'post',
+          url: '/polls/vote',
+          data: {
+            index : this.state.selected,
+            id : this.props.data._id,
+          }
+      }).then(res => {
+        this.props.dataCb();
+      }).catch(err => {
+        if (err) throw err;
+      })
+    }
   }
   
   render(){
@@ -53,6 +79,12 @@ export default class Poll extends Component{
      return {x : option.label, y : option.votes.length}
     });
     
+    //Booleans to assist in view rendering
+    const hasVoted = Number.isInteger(this.props.hasVoted);
+    const hasSelected =  Number.isInteger(this.state.selected);
+    const hasSignedIn = Boolean(this.props.user);
+    const allowCustom = this.props.data.allowCustom;
+    
     return(
       <div>
         <div className="statistics">
@@ -61,34 +93,51 @@ export default class Poll extends Component{
         </div>
         <div className="pollFlex">
           <div className="pollList">
-            {(this.props.user) &&
+            {hasSignedIn &&
                 <RaisedButton 
-                  style = {{width : "100%", margin : "10px"}}
+                  style = {{width : "100%", margin : "10px 20px"}}
                   label="Vote"
                   secondary={true}
-                  disabled={
-                    !(!Number.isInteger(this.props.hasVoted) &&
-                    Number.isInteger(this.state.selected))
-                  }
+                  disabled={!(!hasVoted && hasSelected)}
                   onClick={this.processVote}
                 />
               }
-            <List>
               <Divider />
+              {(allowCustom && hasSignedIn && !hasVoted) &&
+                <div onClick={event => this.selectOption(-1, event)}>
+                  <TextField
+                    style={{width : '80%', margin : '0px 20px'}}
+                    floatingLabelText="Custom User Vote"
+                    value={this.state.customOption}
+                    onChange={(event) => this.updateCustom(event)}
+                  />
+                  <span
+                    style={{float : 'right', margin: '30px 20px'}}>
+                    <FontIcon
+                      className = {
+                        indexMode === -1 ?
+                        "fa fa-check-circle-o" : "fa fa-circle-o"
+                      }
+                    />
+                  </span>
+                </div>
+              }
+            <List>
               {this.props.data.options.map((option, index) => {
                 return(
                   <ListItem
                     onClick={event => this.selectOption(index, event)}
-                    disabled={!this.props.user || Number.isInteger(this.props.hasVoted)}
+                    disabled={!hasSignedIn || hasVoted}
                     key={"option" + index}
                     primaryText={option.label}
                     secondaryText={"Votes: " + option.votes.length}
                     rightIcon={
-                      <FontIcon 
+                      <FontIcon
+                        color={hasVoted || !hasSignedIn ? "grey" : "black"}
                         className = {
                           indexMode === index ?
                           "fa fa-check-circle-o" : "fa fa-circle-o"}
-                    />
+                      />
                     }
                   />
                 )

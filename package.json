@@ -28,7 +28,7 @@
   },
   "scripts": {
     "bundle": "webpack --watch --colors --progress",
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./server/bin/www"
   },
   "keywords": [
     "freeCodeCamp",
