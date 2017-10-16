@@ -49432,7 +49432,6 @@ var Home = function (_Component) {
                 { className: 'appDisplay' },
                 this.state.selected === -3 && _react2.default.createElement(_Profile2.default, {
                   data: yourPolls,
-                  user: this.props.match.params.id,
                   dataCb: this.updateData
                 }),
                 this.state.selected === -2 && _react2.default.createElement(_Stats2.default, {

@@ -127,7 +127,6 @@ export default class Home extends Component {
                 {this.state.selected === -3 && 
                   <Profile
                     data={yourPolls}
-                    user={this.props.match.params.id}
                     dataCb={this.updateData}
                   />
                 }

@@ -12,19 +12,19 @@ const auth = require('./routes/auth');
 const polls = require('./routes/polls')
 
 const authConfig = require('../config/auth.config');
-const database = require('../config/database.config');
+const databaseConfig = require('../config/database.config');
 const User = require('../models/user');
 
 // CREATE APP  //
 var app = express();
 
 //  CONNECT TO DATABASE  //
-mongoose.connect(database.url, {
+mongoose.connect(databaseConfig.url, {
   useMongoClient: true
-}); 
+});
 
 //  MIDDLEWARE //
-app.use(express.static(path.join(__dirname, '../client')));
+app.use(express.static(path.join(__dirname, '../client/static')));
 app.use(bodyParser.urlencoded({
   extended : false
 }));
@@ -55,7 +55,6 @@ passport.deserializeUser(function(id, done) {
     done(err, user);
   });
 });
-
 
 passport.use(new FacebookStrategy(authConfig.facebook,
   function(token, tokenSecret, profile, cb){
