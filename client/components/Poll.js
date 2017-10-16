@@ -87,7 +87,7 @@ export default class Poll extends Component{
     
     return(
       <div>
-        <div className="statistics">
+        <div style={{textAlign : 'center'}}>
           <h2>{this.props.data.title}</h2>
           <h4>Created By {this.props.data.author.displayName}</h4>
         </div>

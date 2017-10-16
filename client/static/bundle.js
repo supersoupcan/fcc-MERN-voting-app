@@ -49691,7 +49691,7 @@ var Poll = function (_Component) {
         null,
         _react2.default.createElement(
           'div',
-          { className: 'statistics' },
+          { style: { textAlign: 'center' } },
           _react2.default.createElement(
             'h2',
             null,
