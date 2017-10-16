@@ -2,4 +2,4 @@
   
 A project for freeCodeCamp.org 
   made by jacob sloots 
-  using the MERN stack!
+  using the MERN stack
